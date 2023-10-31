@@ -1,0 +1,29 @@
+service: lambda-typescript-middy
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  region: ap-northeast-1
+  runtime: nodejs18.x
+  logRetentionInDays: 1
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - 'secretsmanager:GetSecretValue'
+          Resource:
+            - 'arn:aws:secretsmanager:${aws:region}:${aws:accountId}:secret:db-*'
+
+functions:
+  api:
+    handler: index.handler
+    events:
+      - httpApi:
+          path: /
+          method: get
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+  - serverless-better-credentials
